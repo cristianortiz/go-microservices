@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	//read .env files
+	//read .env files in rootPath
 	err := godotenv.Load(".env")
 	if err != nil {
 		fmt.Println(".env file does not exist")

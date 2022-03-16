@@ -35,7 +35,7 @@ func main() {
 
 	// create a new server
 	s := http.Server{
-		Addr:         port,              // configure the bind address
+		Addr:         port,              // configure port
 		Handler:      sm,                // set the default handler
 		ErrorLog:     l,                 // set the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client

@@ -25,13 +25,11 @@ func main() {
 	l := log.New(os.Stdout, "api ", log.LstdFlags)
 
 	// create the handlers
-	hh := handlers.NewHello(l)
-	gh := handlers.NewGoodbye(l)
+	ph := handlers.NewProducts(l)
 
 	// create a new serve mux and register the handlers
 	sm := http.NewServeMux()
-	sm.Handle("/", hh)
-	sm.Handle("/goodbye", gh)
+	sm.Handle("/", ph)
 
 	// create a new server
 	s := http.Server{
@@ -45,7 +43,7 @@ func main() {
 
 	// start the server using goroutine
 	go func() {
-		l.Println("Starting server on port: ", port)
+		l.Println("Starting server on port", port)
 
 		err := s.ListenAndServe()
 		if err != nil {
@@ -54,7 +52,7 @@ func main() {
 		}
 	}()
 
-	// trap sigterm or interupt and gracefully shutdown the server
+	// trap sigterm or interrupt and gracefully shutdown the server
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, os.Kill)
@@ -64,7 +62,9 @@ func main() {
 	log.Println("Got signal:", sig)
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	s.Shutdown(ctx)
+	//explicit cancel() in context.WithTimeout and defer it later to avoid warning about cancel function not discarded
+	defer cancel()
 
 }

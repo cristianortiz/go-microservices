@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"time"
 )
@@ -22,7 +23,7 @@ type Product struct {
 //and encapsulates functionality
 type Products []*Product
 
-func (p *Products) FromJSON(r io.Reader) error {
+func (p *Product) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
 }
@@ -41,12 +42,43 @@ func (p *Products) ToJSON(w io.Writer) error {
 func GetProducts() Products {
 	return productList
 }
-func AddProducts(p *Products) {
+
+func AddProduct(p *Product) {
+	p.ID = getNextID()
+	productList = append(productList, p)
 
 }
+func UpdateProduct(id int, p *Product) error {
+	_, pos, err := findProduct(id)
+	if err != nil {
+		return err
+	}
+	//ensure the Id is correct
+	p.ID = id
+	//udpate the info of product p in position[pos] in datastore
+	productList[pos] = p
+	return nil
+
+}
+
+var ErrProductNotFound = fmt.Errorf("Product not found")
+
+//findProduct() internal function to get the data of a product based on their id
+func findProduct(id int) (*Product, int, error) {
+	for i, p := range productList {
+		if p.ID == id {
+			return p, i, nil
+		}
+	}
+	return nil, -1, ErrProductNotFound
+
+}
+
+//getNextID assign an id when adding a new product to datastore
 func getNextID() int {
+	//get the last added product id
 	lp := productList[len(productList)-1]
-	return lp.ID
+	return lp.ID + 1
 }
 
 //productList hardcoded for now

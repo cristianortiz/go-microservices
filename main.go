@@ -28,9 +28,21 @@ func main() {
 	// create the handlers
 	ph := handlers.NewProducts(l)
 
-	// create a new serve mux and register the handlers
+	// create a new server with gorilla mux
 	sm := mux.NewRouter()
-	sm.Handle("/", ph)
+	//config a subrouter to filter routes to a particular httpp method and http handler
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	//specific handlerfunc GetProduct associated with route "/"
+	getRouter.HandleFunc("/", ph.GetProducts)
+
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	//use regexp to ensures id param contains only digits
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+	putRouter.Use(ph.MiddlewareProductValidation)
+
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", ph.AddProducts)
+	postRouter.Use(ph.MiddlewareProductValidation)
 
 	// create a new server
 	s := http.Server{

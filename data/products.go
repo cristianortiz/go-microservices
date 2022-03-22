@@ -28,7 +28,7 @@ func (p *Product) FromJSON(r io.Reader) error {
 	return e.Decode(p)
 }
 
-//ToJSON() use the json enconder method to return the list of product serialized as JSON
+//ToJSON() use the json encoder method to return the list of product serialized as JSON
 // NewEncoder provides better performance than json.Unmarshal as it does not
 // have to buffer the output into an in memory slice of bytes
 // this reduces allocations and the overheads of the service

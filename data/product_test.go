@@ -8,7 +8,7 @@ func TestCheckValidation(t *testing.T) {
 	p := &Product{
 		Name:  "nics",
 		Price: 1.00,
-		SKU:   "abs", //bad format to validateSku function
+		SKU:   " abc-absd", //correct format to validateSku function
 	}
 
 	//should fails the test if p is empty struct or contains wrong values
